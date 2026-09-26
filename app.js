@@ -228,6 +228,20 @@ function ajouterChanson() {
   mettreAJourAffichage();
   sauvegarderDonnees();
 }
+function toutRenvoyerAuRepertoire() {
+  // Si le concert est déjà vide, inutile d'exécuter la suite
+  if (concert.length === 0) return;
+
+  // On ajoute toutes les chansons du concert dans le répertoire
+  repertoire.push(...concert);
+
+  // On vide complètement le tableau du concert
+  concert = [];
+
+  // On met à jour l'affichage et la base Firebase
+  mettreAJourAffichage();
+  sauvegarderDonnees();
+}
 
 // --- 8. INITIALISATION ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -240,5 +254,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (ulRepertoire) configurerZoneDepot(ulRepertoire, 'repertoire');
   if (ulConcert) configurerZoneDepot(ulConcert, 'concert');
 
-  chargerDonnees(); // <-- NOUVEAU : Va chercher la base de données au lancement
+  // --- NOUVEAU : Écouteur pour le bouton de transfert ---
+  const btnVider = document.getElementById('clear-concert-btn');
+  if (btnVider) btnVider.addEventListener('click', toutRenvoyerAuRepertoire);
+
+  chargerDonnees();
 });
