@@ -76,9 +76,20 @@ function creerElementChanson(chanson, index, nomListe) {
   const li = document.createElement('li');
   li.draggable = true;
 
-  // Conteneur de texte pour le titre et la durée
   const spanTexte = document.createElement('span');
-  spanTexte.textContent = `${chanson.titre} - ${chanson.artiste} (${formaterDuree(chanson.duree)})`;
+
+  // Construction dynamique de la chaîne de texte
+  let texteChanson = `${chanson.titre} - ${chanson.artiste}`;
+  
+  if (chanson.chanteur) {
+    texteChanson += ` | Chant : ${chanson.chanteur}`;
+  }
+  if (chanson.accordage) {
+    texteChanson += ` [${chanson.accordage}]`;
+  }
+  texteChanson += ` (${formaterDuree(chanson.duree)})`;
+
+  spanTexte.textContent = texteChanson;
 
   // Bouton de suppression
   const btnSuppr = document.createElement('button');
@@ -86,24 +97,19 @@ function creerElementChanson(chanson, index, nomListe) {
   btnSuppr.classList.add('btn-supprimer');
   btnSuppr.title = 'Supprimer cette musique';
 
-  // Action de suppression au clic
   btnSuppr.addEventListener('click', (e) => {
-    // Empêche le déclenchement du glisser-déposer lors du clic
     e.stopPropagation();
 
-    // Retrait de la musique du bon tableau
     if (nomListe === 'repertoire') {
       repertoire.splice(index, 1);
     } else if (nomListe === 'concert') {
       concert.splice(index, 1);
     }
 
-    // Mise à jour de l'affichage et sauvegarde dans Firebase
     mettreAJourAffichage();
     sauvegarderDonnees();
   });
 
-  // Assemblage des éléments
   li.appendChild(spanTexte);
   li.appendChild(btnSuppr);
 
@@ -182,14 +188,18 @@ function mettreAJourAffichage() {
 function ajouterChanson() {
   const nomInput = document.getElementById('song-name-input');
   const artisteInput = document.getElementById('artist-input');
+  const singerInput = document.getElementById('singer-input');
+  const tuningInput = document.getElementById('tuning-input');
   const dureeInput = document.getElementById('duree-input');
 
   const nom = nomInput.value.trim();
   const artiste = artisteInput.value.trim();
+  const chanteur = singerInput.value.trim();
+  const accordage = tuningInput.value.trim();
   const dureeStr = dureeInput.value.trim();
 
   if (!nom || !artiste || !dureeStr) {
-    alert('Veuillez remplir tous les champs.');
+    alert('Veuillez remplir au moins le titre, l\'artiste et la durée.');
     return;
   }
 
@@ -199,18 +209,24 @@ function ajouterChanson() {
     return;
   }
 
+  // On enregistre les nouvelles propriétés
   repertoire.push({
     titre: nom,
     artiste: artiste,
+    chanteur: chanteur,
+    accordage: accordage,
     duree: dureeSec
   });
 
+  // Réinitialisation des champs
   nomInput.value = '';
   artisteInput.value = '';
+  singerInput.value = '';
+  tuningInput.value = '';
   dureeInput.value = '';
 
   mettreAJourAffichage();
-  sauvegarderDonnees(); // <-- NOUVEAU : Sauvegarde après un ajout
+  sauvegarderDonnees();
 }
 
 // --- 8. INITIALISATION ---
