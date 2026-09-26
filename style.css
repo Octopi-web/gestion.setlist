@@ -1,0 +1,103 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #7186b3;
+}
+
+#title {
+    color: #f7f4f4;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+.ajout-section {
+    background: white;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+input {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 9px 15px;
+    background-color: #4c6baf;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Disposition des deux listes côte à côte */
+.listes-container {
+    display: flex;
+    gap: 20px;
+}
+
+.liste-section {
+    flex: 1; /* Chaque liste prend la moitié de la place */
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    min-height: 400px; /* Assure que la zone de dépôt reste grande même vide */
+    display: flex;
+    flex-direction: column;
+}
+
+.instruction {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: -10px;
+}
+
+ul.dropzone {
+    list-style-type: none;
+    padding: 10px;
+    margin: 0;
+    flex-grow: 1; /* La liste prend tout l'espace disponible vers le bas */
+    border: 2px dashed #bcbbbb; /* Indique visuellement qu'on peut déposer */
+    border-radius: 6px;
+    background-color: #fafafa;
+}
+
+ul.dropzone.drag-over {
+    background-color: #e8f5e9;
+    border-color: #4c6baf;
+}
+
+li {
+    background-color: #ffffff;
+    margin-bottom: 8px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: grab;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Nunito', sans-serif;
+}
+
+li.dragging {
+    opacity: 0.5;
+}
+
+#total-duree {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #eee;
+    text-align: center;
+    font-family: 'Nunito', sans-serif, bold;
+}
+background {
+    background-color: #4CAF50;
+}

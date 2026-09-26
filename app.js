@@ -1,0 +1,228 @@
+// --- 1. CONFIGURATION FIREBASE ---
+// Importation des outils Firebase depuis les serveurs officiels
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+// ⚠️ REMPLACE CET OBJET PAR CELUI FOURNI PAR FIREBASE DANS TON PROJET ⚠️
+const firebaseConfig = {
+  apiKey: "AIzaSyAC38RWHlHMpD5Zehu7yy-l6kyhaGbHw7M",
+  authDomain: "organisationconcerts.firebaseapp.com",
+  projectId: "organisationconcerts",
+  storageBucket: "organisationconcerts.firebasestorage.app",
+  messagingSenderId: "657586450754",
+  appId: "1:657586450754:web:a92c201c9ecc9ad352d8db",
+  measurementId: "G-853E68N9XK"
+};
+
+// Initialisation de la base de données
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// --- 2. ÉTAT DE L'APPLICATION ---
+let repertoire = [];
+let concert = [];
+let indexDeplace = null;
+let listeOrigine = null;
+
+// --- 3. CONNEXION À LA BASE DE DONNÉES (NOUVEAU) ---
+
+// Sauvegarde l'état complet des deux listes
+async function sauvegarderDonnees() {
+  try {
+    // On écrit dans une collection "app_musique", dans un document "mes_listes"
+    await setDoc(doc(db, "app_musique", "mes_listes"), {
+      repertoire: repertoire,
+      concert: concert
+    });
+    console.log("Sauvegarde réussie !");
+  } catch (error) {
+    console.error("Erreur de sauvegarde :", error);
+  }
+}
+
+// Charge les listes au démarrage
+async function chargerDonnees() {
+  try {
+    const docSnap = await getDoc(doc(db, "app_musique", "mes_listes"));
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      repertoire = data.repertoire || [];
+      concert = data.concert || [];
+      mettreAJourAffichage(); // Met à jour l'écran avec les données téléchargées
+    }
+  } catch (error) {
+    console.error("Erreur de chargement :", error);
+  }
+}
+
+// --- 4. FONCTIONS UTILITAIRES ---
+function formaterDuree(secondesTotales) {
+  const min = Math.floor(secondesTotales / 60);
+  const sec = secondesTotales % 60;
+  return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+}
+
+function analyserDuree(dureeStr) {
+  const parties = dureeStr.split(':');
+  if (parties.length !== 2) return null;
+  const min = parseInt(parties[0], 10);
+  const sec = parseInt(parties[1], 10);
+  if (isNaN(min) || isNaN(sec) || sec < 0 || sec >= 60 || min < 0) return null;
+  return min * 60 + sec;
+}
+
+// --- 5. DESSIN DES ÉLÉMENTS ET DRAG & DROP ---
+function creerElementChanson(chanson, index, nomListe) {
+  const li = document.createElement('li');
+  li.draggable = true;
+
+  // Conteneur de texte pour le titre et la durée
+  const spanTexte = document.createElement('span');
+  spanTexte.textContent = `${chanson.titre} - ${chanson.artiste} (${formaterDuree(chanson.duree)})`;
+
+  // Bouton de suppression
+  const btnSuppr = document.createElement('button');
+  btnSuppr.textContent = '✕';
+  btnSuppr.classList.add('btn-supprimer');
+  btnSuppr.title = 'Supprimer cette musique';
+
+  // Action de suppression au clic
+  btnSuppr.addEventListener('click', (e) => {
+    // Empêche le déclenchement du glisser-déposer lors du clic
+    e.stopPropagation();
+
+    // Retrait de la musique du bon tableau
+    if (nomListe === 'repertoire') {
+      repertoire.splice(index, 1);
+    } else if (nomListe === 'concert') {
+      concert.splice(index, 1);
+    }
+
+    // Mise à jour de l'affichage et sauvegarde dans Firebase
+    mettreAJourAffichage();
+    sauvegarderDonnees();
+  });
+
+  // Assemblage des éléments
+  li.appendChild(spanTexte);
+  li.appendChild(btnSuppr);
+
+  // Événements de Drag & Drop
+  li.addEventListener('dragstart', (e) => {
+    indexDeplace = index;
+    listeOrigine = nomListe;
+    li.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', ''); 
+  });
+
+  li.addEventListener('dragend', () => {
+    li.classList.remove('dragging');
+    indexDeplace = null;
+    listeOrigine = null;
+  });
+
+  return li;
+}
+
+function configurerZoneDepot(ulElement, nomListeCible) {
+  ulElement.addEventListener('dragover', (e) => {
+    e.preventDefault(); 
+    ulElement.classList.add('drag-over');
+  });
+
+  ulElement.addEventListener('dragleave', () => {
+    ulElement.classList.remove('drag-over');
+  });
+
+  ulElement.addEventListener('drop', (e) => {
+    e.preventDefault();
+    ulElement.classList.remove('drag-over');
+
+    if (indexDeplace === null || listeOrigine === null) return;
+
+    const tableauSource = listeOrigine === 'repertoire' ? repertoire : concert;
+    const tableauCible = nomListeCible === 'repertoire' ? repertoire : concert;
+
+    const [chansonDeplacee] = tableauSource.splice(indexDeplace, 1);
+    tableauCible.push(chansonDeplacee);
+
+    mettreAJourAffichage();
+    sauvegarderDonnees(); // <-- NOUVEAU : Sauvegarde après un glisser-déposer
+  });
+}
+
+// --- 6. MISE À JOUR DE L'INTERFACE ---
+function mettreAJourAffichage() {
+  const ulRepertoire = document.getElementById('repertoire-list');
+  const ulConcert = document.getElementById('concert-list');
+  const totalDureeElem = document.getElementById('total-duree');
+
+  if (ulRepertoire) {
+    ulRepertoire.innerHTML = '';
+    repertoire.forEach((chanson, index) => {
+      ulRepertoire.appendChild(creerElementChanson(chanson, index, 'repertoire'));
+    });
+  }
+
+  let totalSecondesConcert = 0;
+  if (ulConcert) {
+    ulConcert.innerHTML = '';
+    concert.forEach((chanson, index) => {
+      totalSecondesConcert += chanson.duree;
+      ulConcert.appendChild(creerElementChanson(chanson, index, 'concert'));
+    });
+  }
+
+  if (totalDureeElem) {
+    totalDureeElem.textContent = `Durée totale du concert : ${formaterDuree(totalSecondesConcert)}`;
+  }
+}
+
+// --- 7. AJOUT DE CHANSON ---
+function ajouterChanson() {
+  const nomInput = document.getElementById('song-name-input');
+  const artisteInput = document.getElementById('artist-input');
+  const dureeInput = document.getElementById('duree-input');
+
+  const nom = nomInput.value.trim();
+  const artiste = artisteInput.value.trim();
+  const dureeStr = dureeInput.value.trim();
+
+  if (!nom || !artiste || !dureeStr) {
+    alert('Veuillez remplir tous les champs.');
+    return;
+  }
+
+  const dureeSec = analyserDuree(dureeStr);
+  if (dureeSec === null) {
+    alert('Format de durée invalide. Utilisez le format MM:SS (ex: 03:45).');
+    return;
+  }
+
+  repertoire.push({
+    titre: nom,
+    artiste: artiste,
+    duree: dureeSec
+  });
+
+  nomInput.value = '';
+  artisteInput.value = '';
+  dureeInput.value = '';
+
+  mettreAJourAffichage();
+  sauvegarderDonnees(); // <-- NOUVEAU : Sauvegarde après un ajout
+}
+
+// --- 8. INITIALISATION ---
+document.addEventListener('DOMContentLoaded', () => {
+  const btnAjouter = document.getElementById('add-song-button');
+  if (btnAjouter) btnAjouter.addEventListener('click', ajouterChanson);
+
+  const ulRepertoire = document.getElementById('repertoire-list');
+  const ulConcert = document.getElementById('concert-list');
+
+  if (ulRepertoire) configurerZoneDepot(ulRepertoire, 'repertoire');
+  if (ulConcert) configurerZoneDepot(ulConcert, 'concert');
+
+  chargerDonnees(); // <-- NOUVEAU : Va chercher la base de données au lancement
+});

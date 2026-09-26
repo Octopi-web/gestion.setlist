@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Gestionnaire de Concert</title>
+        <link rel="stylesheet" href="style.css">
+        <script type="module" src="app.js" defer></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+	</head>
+	<body>
+		<header>
+            <h1 id="title">Gestionnaire de Concert</h1>
+		</header>
+
+		<main>
+            <!-- Zone d'ajout de musiques au répertoire -->
+            <section class="ajout-section">
+                <h2>Ajouter au répertoire</h2>
+                <input type="text" id="song-name-input" placeholder="Titre de la chanson">
+                <input type="text" id="artist-input" placeholder="Artiste">
+                <input type="text" id="duree-input" placeholder="Durée (ex: 3:45)">
+                <button id="add-song-button">Ajouter au répertoire</button>
+            </section>
+
+            <!-- Les deux listes -->
+            <div class="listes-container">
+                
+                <!-- Liste 1 : Le Répertoire global -->
+                <section class="liste-section" id="zone-repertoire">
+                    <h2>Répertoire global</h2>
+                    <p class="instruction">Glissez les musiques d'ici vers le concert</p>
+                    <ul id="repertoire-list" class="dropzone">
+                        <!-- Les musiques ajoutées apparaîtront ici -->
+                    </ul>
+                </section>
+
+                <!-- Liste 2 : Le Concert -->
+                <section class="liste-section" id="zone-concert">
+                    <h2>Prochain Concert</h2>
+                    <p class="instruction">Déposez les musiques ici</p>
+                    <ul id="concert-list" class="dropzone">
+                        <!-- Les musiques choisies apparaîtront ici -->
+                    </ul>
+                    <h3 id="total-duree">Durée du concert : 00:00</h3>
+                </section>
+
+            </div>
+		</main>
+	</body>
+</html>
