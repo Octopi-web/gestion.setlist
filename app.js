@@ -129,6 +129,26 @@ function creerElementChanson(chanson, index, nomListe) {
 
   return li;
 }
+// Calcule l'index exact où insérer la musique en fonction de la position Y de la souris
+function obtenirIndexInsertion(ulElement, positionY) {
+  // On récupère toutes les chansons de la liste, SAUF celle qu'on est en train de glisser
+  const elements = [...ulElement.querySelectorAll('li:not(.dragging)')];
+
+  const resultat = elements.reduce((lePlusProche, enfant, index) => {
+    const boite = enfant.getBoundingClientRect();
+    // On calcule la distance entre la souris et le milieu de la chanson survolée
+    const decalage = positionY - boite.top - boite.height / 2;
+
+    // Si la souris est au-dessus du milieu de l'élément
+    if (decalage < 0 && decalage > lePlusProche.decalage) {
+      return { decalage: decalage, index: index };
+    } else {
+      return lePlusProche;
+    }
+  }, { decalage: Number.NEGATIVE_INFINITY, index: elements.length });
+
+  return resultat.index; // Retourne l'index exact où on doit insérer
+}
 
 function configurerZoneDepot(ulElement, nomListeCible) {
   ulElement.addEventListener('dragover', (e) => {
@@ -149,11 +169,17 @@ function configurerZoneDepot(ulElement, nomListeCible) {
     const tableauSource = listeOrigine === 'repertoire' ? repertoire : concert;
     const tableauCible = nomListeCible === 'repertoire' ? repertoire : concert;
 
+    // --- NOUVEAU : On calcule la position visée ---
+    const indexInsertion = obtenirIndexInsertion(ulElement, e.clientY);
+
+    // 1. On retire l'élément de sa liste de départ
     const [chansonDeplacee] = tableauSource.splice(indexDeplace, 1);
-    tableauCible.push(chansonDeplacee);
+    
+    // 2. On l'insère dans la liste d'arrivée à l'index calculé
+    tableauCible.splice(indexInsertion, 0, chansonDeplacee);
 
     mettreAJourAffichage();
-    sauvegarderDonnees(); // <-- NOUVEAU : Sauvegarde après un glisser-déposer
+    sauvegarderDonnees(); 
   });
 }
 
