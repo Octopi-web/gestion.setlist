@@ -1,3 +1,13 @@
+/* --- 1. RESET GLOBAL & BASE --- */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
@@ -12,6 +22,7 @@ h1, h2 {
     color: #333;
 }
 
+/* --- 2. FORMULAIRE D'AJOUT --- */
 .ajout-section {
     background: white;
     padding: 15px;
@@ -37,7 +48,7 @@ button {
     cursor: pointer;
 }
 
-/* Disposition des deux listes côte à côte */
+/* --- 3. DISPOSITION DES LISTES --- */
 .listes-container {
     display: flex;
     gap: 20px;
@@ -49,7 +60,7 @@ button {
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    min-height: 400px; /* Assure que la zone de dépôt reste grande même vide */
+    min-height: 400px;
     display: flex;
     flex-direction: column;
 }
@@ -63,15 +74,15 @@ button {
 ul.dropzone {
     list-style-type: none;
     margin: 0;
-    flex-grow: 2; /* La liste prend tout l'espace disponible vers le bas */
-    border: 2px dashed #bcbbbb; /* Indique visuellement qu'on peut déposer */
+    flex-grow: 2;
+    border: 2px dashed #bcbbbb;
     border-radius: 6px;
     background-color: #fafafa;
-    min-height: 350px; /* Augmente la hauteur de la boîte pointillée */
+    min-height: 350px;
     padding: 15px;
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Espace régulier entre chaque chanson */
+    gap: 10px;
 }
 
 ul.dropzone.drag-over {
@@ -79,15 +90,18 @@ ul.dropzone.drag-over {
     border-color: #4c6baf;
 }
 
+/* --- 4. ÉLÉMENTS DE LA LISTE --- */
 li {
     background-color: #ffffff;
     margin-bottom: 8px;
-    padding: 12px;
+    padding: 10px 12px;
     border: 1px solid #bcbbbb;
     border-radius: 6px;
     cursor: grab;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: 10px;
     font-family: 'Nunito', sans-serif;
 }
 
@@ -95,38 +109,21 @@ li.dragging {
     opacity: 0.5;
 }
 
-#total-duree {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 2px solid #eee;
-    text-align: center;
-    font-family: 'Nunito', sans-serif, bold;
-}
-/* --- AMÉLIORATIONS GLOBALES --- */
-
-/* Sécurise les dimensions des éléments */
-* {
-    box-sizing: border-box;
-}
-
-/* Fixe le layout d'une chanson pour que le bouton ne s'étire pas */
-li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-}
-
 li span {
-    flex: 1; /* Le texte occupe tout l'espace disponible */
-    word-break: break-word; /* Évite les débordements de texte long */
-    white-space: pre-wrap; /* Indispensable pour afficher les notes à la ligne */
+    flex: 1;
+    word-break: break-word;
+    white-space: pre-wrap;
 }
 
-/* Bouton de suppression propre et de taille fixe */
+/* --- 5. BOUTONS D'ACTION ET EXPORT --- */
+.actions-container {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
 .btn-supprimer {
-    flex-shrink: 0; /* Empêche le bouton de se faire écraser ou étirer */
+    flex-shrink: 0;
     width: 32px;
     height: 32px;
     padding: 0;
@@ -146,58 +143,6 @@ li span {
     background-color: #c0392b;
 }
 
-
-@media (max-width: 768px) {
-    /* ... tes autres règles mobiles existantes ... */
-
-    /* Passe la ligne de la musique en mode colonne */
-    li {
-        flex-direction: column;
-        align-items: flex-start; /* Aligne le texte à gauche */
-        gap: 8px; /* Espace entre le texte et les boutons */
-    }
-
-    /* Ajuste la barre de boutons pour qu'elle prenne la largeur et s'aligne à droite */
-    .actions-container {
-        width: 100%;
-        justify-content: flex-end;
-        padding-top: 5px;
-        border-top: 1px dashed #eee; /* Optionnel : petite ligne de séparation discrète */
-    }
-}
-
-@media (min-width: 769px) {
-    .liste-section {
-        min-height: 550px;
-    }
-
-    ul.dropzone {
-        min-height: 450px;
-    }
-}
-.btn-exporter {
-    padding: 9px 15px;
-    background-color: #4c6baf;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px; /* Ajoute un petit espace au-dessus du bouton */
-}
-.btn-exporter:hover {
-    background-color: rgb(40, 64, 115);
-}
-.btn-vider:hover {
-    background-color: rgb(40, 64, 115);
-}
-/* Conteneur pour aligner proprement les boutons d'action */
-.actions-container {
-    display: flex;
-    gap: 5px;
-    flex-shrink: 0;
-}
-
-/* Style du bouton commentaire */
 .btn-commentaire {
     width: 32px;
     height: 32px;
@@ -205,7 +150,7 @@ li span {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: #f39c12; /* Jaune orangé */
+    background-color: #f39c12;
     color: white;
     border: none;
     border-radius: 6px;
@@ -216,7 +161,32 @@ li span {
 .btn-commentaire:hover {
     background-color: #e67e22;
 }
-/* --- GESTION DES SAUVEGARDES --- */
+
+.btn-exporter {
+    padding: 9px 15px;
+    background-color: #4c6baf;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-exporter:hover,
+.btn-vider:hover {
+    background-color: rgb(40, 64, 115);
+}
+
+#total-duree {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #eee;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    font-weight: bold;
+}
+
+/* --- 6. GESTION DES SAUVEGARDES --- */
 .gestion-sauvegardes {
     margin-top: 15px;
     padding-top: 15px;
@@ -237,12 +207,12 @@ li span {
 }
 
 .save-controls input {
-    flex: 1; /* Le champ de texte prend le maximum de place */
-    margin: 0; /* Enlève la marge par défaut des inputs */
+    flex: 1;
+    margin: 0;
 }
 
 .btn-sauvegarder {
-    background-color: #27ae60; /* Vert pour indiquer une sauvegarde */
+    background-color: #27ae60;
 }
 
 .btn-sauvegarder:hover {
@@ -257,4 +227,93 @@ li span {
     margin-bottom: 10px;
     font-family: "Nunito", sans-serif;
     cursor: pointer;
+}
+
+/* --- 7. ADAPTATION ORDINATEUR (MIN-WIDTH 769px) --- */
+@media (min-width: 769px) {
+    .liste-section {
+        min-height: 550px;
+    }
+
+    ul.dropzone {
+        min-height: 450px;
+    }
+}
+
+/* --- 8. ADAPTATION MOBILE (MAX-WIDTH 768px) --- */
+@media (max-width: 768px) {
+    body {
+        margin: 5px; /* On gagne de la place sur les bords de l'écran */
+    }
+
+    /* 1. ON FORCÉ LES 2 COLONNES CÔTE À CÔTE */
+    .listes-container {
+        flex-direction: row; 
+        gap: 8px; /* Espace réduit entre les deux colonnes */
+    }
+
+    .liste-section {
+        flex: 1;
+        width: 50%; /* Chaque liste prend la moitié de l'écran */
+        padding: 8px; /* Marges intérieures réduites */
+    }
+
+    /* 2. LE FORMULAIRE D'AJOUT RESTE EN PLEINE LARGEUR */
+    .ajout-section {
+        width: 100%;
+    }
+
+    .ajout-section input {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    /* 3. SYSTÈME DE SAUVEGARDE ET BOUTONS EMPILÉS POUR NE PAS DÉBORDER */
+    .save-controls {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .save-controls input,
+    .save-controls button,
+    .btn-sauvegarder,
+    .btn-exporter,
+    .btn-vider,
+    #load-concert-select {
+        width: 100%;
+        margin: 0 0 8px 0;
+        font-size: 0.85em; /* Texte des boutons légèrement réduit */
+        padding: 8px;
+    }
+
+    /* 4. AJUSTEMENT DES CHANSONS (très étroites maintenant) */
+    ul.dropzone {
+        padding: 5px;
+    }
+
+    li {
+        flex-direction: column; /* Le texte et les boutons s'empilent dans la chanson */
+        align-items: flex-start;
+        gap: 6px;
+        padding: 6px;
+        font-size: 0.85em; /* Texte de la chanson plus petit */
+    }
+
+    .actions-container {
+        width: 100%;
+        justify-content: flex-end;
+        padding-top: 5px;
+        border-top: 1px dashed #eee;
+    }
+
+    /* On réduit légèrement la taille des boutons supprimer/note */
+    .btn-supprimer, .btn-commentaire {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    #total-duree {
+        font-size: 0.9em; /* Texte de la durée un peu plus petit */
+    }
 }
