@@ -268,6 +268,47 @@ function toutRenvoyerAuRepertoire() {
   mettreAJourAffichage();
   sauvegarderDonnees();
 }
+function exporterTableurCSV() {
+  if (concert.length === 0) {
+    alert("La liste du concert est vide ! Rien à exporter.");
+    return;
+  }
+
+  // 1. Création des en-têtes du tableau (colonnes)
+  let contenuCSV = "Numéro;Titre;Artiste;Chant;Accordage;Durée\n";
+
+  // 2. Ajout de chaque musique ligne par ligne
+  concert.forEach((chanson, index) => {
+    // On sécurise les textes au cas où ils contiennent des guillemets
+    const titre = chanson.titre ? chanson.titre.replace(/"/g, '""') : '';
+    const artiste = chanson.artiste ? chanson.artiste.replace(/"/g, '""') : '';
+    const chanteur = chanson.chanteur ? chanson.chanteur.replace(/"/g, '""') : '';
+    const accordage = chanson.accordage ? chanson.accordage.replace(/"/g, '""') : '';
+    const duree = formaterDuree(chanson.duree);
+
+    // On place chaque info entre guillemets et séparée par un point-virgule
+    contenuCSV += `"${index + 1}";"${titre}";"${artiste}";"${chanteur}";"${accordage}";"${duree}"\n`;
+  });
+
+  // 3. Forcer l'encodage UTF-8 pour que les accents s'affichent bien dans Excel (BOM)
+  const bom = "\uFEFF"; 
+  const blob = new Blob([bom + contenuCSV], { type: 'text/csv;charset=utf-8;' });
+  
+  // 4. Création d'un lien invisible pour forcer le téléchargement du fichier
+  const url = URL.createObjectURL(blob);
+  const lien = document.createElement('a');
+  lien.href = url;
+  
+  // Nom du fichier téléchargé
+  lien.setAttribute('download', 'Setlist_Concert.csv');
+  
+  document.body.appendChild(lien);
+  lien.click(); // Simule le clic
+  
+  // Nettoyage après le téléchargement
+  document.body.removeChild(lien);
+  URL.revokeObjectURL(url);
+}
 
 // --- 8. INITIALISATION ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -283,6 +324,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- NOUVEAU : Écouteur pour le bouton de transfert ---
   const btnVider = document.getElementById('clear-concert-btn');
   if (btnVider) btnVider.addEventListener('click', toutRenvoyerAuRepertoire);
+
+  // Dans DOMContentLoaded dans app.js
+  const btnExporter = document.getElementById('export-csv-btn');
+  if (btnExporter) btnExporter.addEventListener('click', exporterTableurCSV);
+
 
   chargerDonnees();
 });
