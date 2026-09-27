@@ -81,7 +81,7 @@ function creerElementChanson(chanson, index, nomListe) {
   // 1. On crée un élément 'strong' (gras) pour les infos principales
   const partieGras = document.createElement('strong');
   let texteInfos = `${chanson.titre} - ${chanson.artiste}`;
-  if (chanson.chanteur) texteInfos += ` | Chant : ${chanson.chanteur}`;
+  if (chanson.chanteur) texteInfos += ` | ${chanson.chanteur}`;
   if (chanson.accordage) texteInfos += ` [${chanson.accordage}]`;
   texteInfos += ` (${formaterDuree(chanson.duree)})`;
   
