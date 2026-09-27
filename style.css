@@ -147,7 +147,24 @@ li span {
 }
 
 
-/* --- ADAPTATION MOBILES ET TABLETTES (ÉCRANS < 768px) --- */
+@media (max-width: 768px) {
+    /* ... tes autres règles mobiles existantes ... */
+
+    /* Passe la ligne de la musique en mode colonne */
+    li {
+        flex-direction: column;
+        align-items: flex-start; /* Aligne le texte à gauche */
+        gap: 8px; /* Espace entre le texte et les boutons */
+    }
+
+    /* Ajuste la barre de boutons pour qu'elle prenne la largeur et s'aligne à droite */
+    .actions-container {
+        width: 100%;
+        justify-content: flex-end;
+        padding-top: 5px;
+        border-top: 1px dashed #eee; /* Optionnel : petite ligne de séparation discrète */
+    }
+}
 
 @media (min-width: 769px) {
     .liste-section {
