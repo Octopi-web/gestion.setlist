@@ -1,9 +1,8 @@
 // --- 1. CONFIGURATION FIREBASE ---
-// Importation des outils Firebase depuis les serveurs officiels
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// ⚠️ REMPLACE CET OBJET PAR CELUI FOURNI PAR FIREBASE DANS TON PROJET ⚠️
+// ⚠️ Ta configuration Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAC38RWHlHMpD5Zehu7yy-l6kyhaGbHw7M",
   authDomain: "organisationconcerts.firebaseapp.com",
@@ -14,7 +13,6 @@ const firebaseConfig = {
   measurementId: "G-853E68N9XK"
 };
 
-// Initialisation de la base de données
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
@@ -24,23 +22,18 @@ let concert = [];
 let indexDeplace = null;
 let listeOrigine = null;
 
-// --- 3. CONNEXION À LA BASE DE DONNÉES ---
-
-// Sauvegarde l'état complet des deux listes
+// --- 3. CONNEXION À LA BASE DE DONNÉES GLOBALE ---
 async function sauvegarderDonnees() {
   try {
-    // On écrit dans une collection "app_musique", dans un document "mes_listes"
     await setDoc(doc(db, "app_musique", "mes_listes"), {
       repertoire: repertoire,
       concert: concert
     });
-    console.log("Sauvegarde réussie !");
   } catch (error) {
     console.error("Erreur de sauvegarde :", error);
   }
 }
 
-// Charge les listes au démarrage
 async function chargerDonnees() {
   try {
     const docSnap = await getDoc(doc(db, "app_musique", "mes_listes"));
@@ -48,7 +41,7 @@ async function chargerDonnees() {
       const data = docSnap.data();
       repertoire = data.repertoire || [];
       concert = data.concert || [];
-      mettreAJourAffichage(); // Met à jour l'écran avec les données téléchargées
+      mettreAJourAffichage();
     }
   } catch (error) {
     console.error("Erreur de chargement :", error);
@@ -78,38 +71,34 @@ function creerElementChanson(chanson, index, nomListe) {
 
   const spanTexte = document.createElement('span');
 
-  // 1. On crée un élément 'strong' (gras) pour les infos principales
+  // Partie en gras
   const partieGras = document.createElement('strong');
   let texteInfos = `${chanson.titre} - ${chanson.artiste}`;
-  if (chanson.chanteur) texteInfos += ` | ${chanson.chanteur}`;
+  if (chanson.chanteur) texteInfos += ` | Chant : ${chanson.chanteur}`;
   if (chanson.accordage) texteInfos += ` [${chanson.accordage}]`;
   texteInfos += ` (${formaterDuree(chanson.duree)})`;
   
   partieGras.textContent = texteInfos;
-  spanTexte.appendChild(partieGras); // On injecte la partie en gras
+  spanTexte.appendChild(partieGras);
 
-  // 2. Ajout du commentaire s'il existe (en texte normal)
+  // Partie note (texte normal avec saut de ligne)
   if (chanson.commentaire) {
-    // createTextNode permet d'ajouter du texte brut à la suite
     const texteNote = document.createTextNode(`\nNote : ${chanson.commentaire}`);
     spanTexte.appendChild(texteNote);
   }
 
-  // Conteneur pour grouper les boutons (Commentaire + Supprimer)
+  // Boutons
   const divActions = document.createElement('div');
   divActions.classList.add('actions-container');
 
-  // --- BOUTON COMMENTAIRE ---
   const btnCommentaire = document.createElement('button');
   btnCommentaire.textContent = '📃';
   btnCommentaire.classList.add('btn-commentaire');
-  btnCommentaire.title = 'Ajouter ou modifier une note';
-
+  btnCommentaire.title = 'Ajouter/modifier une note';
   btnCommentaire.addEventListener('click', (e) => {
     e.stopPropagation();
     const noteActuelle = chanson.commentaire || '';
     const nouvelleNote = prompt(`Note pour "${chanson.titre}" :`, noteActuelle);
-
     if (nouvelleNote !== null) {
       const tableauCible = nomListe === 'repertoire' ? repertoire : concert;
       tableauCible[index].commentaire = nouvelleNote.trim();
@@ -118,12 +107,10 @@ function creerElementChanson(chanson, index, nomListe) {
     }
   });
 
-  // --- BOUTON SUPPRIMER ---
   const btnSuppr = document.createElement('button');
   btnSuppr.textContent = '✕';
   btnSuppr.classList.add('btn-supprimer');
   btnSuppr.title = 'Supprimer cette musique';
-
   btnSuppr.addEventListener('click', (e) => {
     e.stopPropagation();
     if (nomListe === 'repertoire') {
@@ -135,13 +122,12 @@ function creerElementChanson(chanson, index, nomListe) {
     sauvegarderDonnees();
   });
 
-  // Assemblage
   divActions.appendChild(btnCommentaire);
   divActions.appendChild(btnSuppr);
   li.appendChild(spanTexte);
   li.appendChild(divActions);
 
-  // Drag & Drop
+  // Événements Drag & Drop
   li.addEventListener('dragstart', (e) => {
     indexDeplace = index;
     listeOrigine = nomListe;
@@ -158,25 +144,18 @@ function creerElementChanson(chanson, index, nomListe) {
   return li;
 }
 
-// Calcule l'index exact où insérer la musique en fonction de la position Y de la souris
 function obtenirIndexInsertion(ulElement, positionY) {
-  // On récupère toutes les chansons de la liste, SAUF celle qu'on est en train de glisser
   const elements = [...ulElement.querySelectorAll('li:not(.dragging)')];
-
   const resultat = elements.reduce((lePlusProche, enfant, index) => {
     const boite = enfant.getBoundingClientRect();
-    // On calcule la distance entre la souris et le milieu de la chanson survolée
     const decalage = positionY - boite.top - boite.height / 2;
-
-    // Si la souris est au-dessus du milieu de l'élément
     if (decalage < 0 && decalage > lePlusProche.decalage) {
       return { decalage: decalage, index: index };
     } else {
       return lePlusProche;
     }
   }, { decalage: Number.NEGATIVE_INFINITY, index: elements.length });
-
-  return resultat.index; // Retourne l'index exact où on doit insérer
+  return resultat.index;
 }
 
 function configurerZoneDepot(ulElement, nomListeCible) {
@@ -198,13 +177,8 @@ function configurerZoneDepot(ulElement, nomListeCible) {
     const tableauSource = listeOrigine === 'repertoire' ? repertoire : concert;
     const tableauCible = nomListeCible === 'repertoire' ? repertoire : concert;
 
-    // On calcule la position visée
     const indexInsertion = obtenirIndexInsertion(ulElement, e.clientY);
-
-    // 1. On retire l'élément de sa liste de départ
     const [chansonDeplacee] = tableauSource.splice(indexDeplace, 1);
-    
-    // 2. On l'insère dans la liste d'arrivée à l'index calculé
     tableauCible.splice(indexInsertion, 0, chansonDeplacee);
 
     mettreAJourAffichage();
@@ -239,7 +213,7 @@ function mettreAJourAffichage() {
   }
 }
 
-// --- 7. AJOUT DE CHANSON ---
+// --- 7. ACTIONS DES BOUTONS ---
 function ajouterChanson() {
   const nomInput = document.getElementById('song-name-input');
   const artisteInput = document.getElementById('artist-input');
@@ -264,7 +238,6 @@ function ajouterChanson() {
     return;
   }
 
-  // On enregistre les nouvelles propriétés
   repertoire.push({
     titre: nom,
     artiste: artiste,
@@ -273,7 +246,6 @@ function ajouterChanson() {
     duree: dureeSec
   });
 
-  // Réinitialisation des champs
   nomInput.value = '';
   artisteInput.value = '';
   singerInput.value = '';
@@ -285,16 +257,9 @@ function ajouterChanson() {
 }
 
 function toutRenvoyerAuRepertoire() {
-  // Si le concert est déjà vide, inutile d'exécuter la suite
   if (concert.length === 0) return;
-
-  // On ajoute toutes les chansons du concert dans le répertoire
   repertoire.push(...concert);
-
-  // On vide complètement le tableau du concert
   concert = [];
-
-  // On met à jour l'affichage et la base Firebase
   mettreAJourAffichage();
   sauvegarderDonnees();
 }
@@ -305,9 +270,7 @@ function exporterTableurCSV() {
     return;
   }
 
-  // En-têtes avec la colonne Commentaire
   let contenuCSV = "Numéro;Titre;Artiste;Chant;Accordage;Durée;Commentaire\n";
-
   concert.forEach((chanson, index) => {
     const titre = chanson.titre ? chanson.titre.replace(/"/g, '""') : '';
     const artiste = chanson.artiste ? chanson.artiste.replace(/"/g, '""') : '';
@@ -315,43 +278,120 @@ function exporterTableurCSV() {
     const accordage = chanson.accordage ? chanson.accordage.replace(/"/g, '""') : '';
     const duree = formaterDuree(chanson.duree);
     const commentaire = chanson.commentaire ? chanson.commentaire.replace(/"/g, '""') : '';
-
     contenuCSV += `"${index + 1}";"${titre}";"${artiste}";"${chanteur}";"${accordage}";"${duree}";"${commentaire}"\n`;
   });
 
   const bom = "\uFEFF"; 
   const blob = new Blob([bom + contenuCSV], { type: 'text/csv;charset=utf-8;' });
-  
   const url = URL.createObjectURL(blob);
   const lien = document.createElement('a');
   lien.href = url;
   lien.setAttribute('download', 'Setlist_Concert.csv');
-  
   document.body.appendChild(lien);
   lien.click(); 
-  
   document.body.removeChild(lien);
   URL.revokeObjectURL(url);
 }
 
-// --- 8. INITIALISATION ---
+// --- 8. SYSTÈME DE SAUVEGARDE DE CONCERTS ---
+async function sauvegarderConcertNomme() {
+    const nomInput = document.getElementById('nom-concert-input');
+    const nom = nomInput.value.trim();
+
+    if (!nom) {
+        alert("Veuillez entrer un nom pour ce concert.");
+        return;
+    }
+    if (concert.length === 0) {
+        alert("La liste du concert est vide !");
+        return;
+    }
+
+    try {
+        await setDoc(doc(db, "concerts_sauvegardes", nom), {
+            chansons: concert
+        });
+        alert(`Le concert "${nom}" a été sauvegardé !`);
+        nomInput.value = ''; 
+        chargerListeConcerts(); 
+    } catch (error) {
+        console.error("Erreur de sauvegarde :", error);
+    }
+}
+
+async function chargerListeConcerts() {
+    const select = document.getElementById('load-concert-select');
+    if (!select) return;
+
+    try {
+        const querySnapshot = await getDocs(collection(db, "concerts_sauvegardes"));
+        select.innerHTML = '<option value="">~ Charger un concert sauvegardé ~</option>';
+        
+        querySnapshot.forEach((doc) => {
+            const option = document.createElement('option');
+            option.value = doc.id;
+            option.textContent = doc.id;
+            select.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Erreur lors du chargement de la liste :", error);
+    }
+}
+
+async function chargerConcertSpecifique(event) {
+    const nomConcert = event.target.value;
+    if (!nomConcert) return;
+
+    if (!confirm(`Voulez-vous remplacer le concert actuel par "${nomConcert}" ? \nLes musiques de la colonne de droite retourneront dans le répertoire.`)) {
+        event.target.value = ''; 
+        return;
+    }
+
+    try {
+        const docSnap = await getDoc(doc(db, "concerts_sauvegardes", nomConcert));
+        if (docSnap.exists()) {
+            repertoire.push(...concert);
+            
+            const nouveauConcert = docSnap.data().chansons || [];
+            concert = nouveauConcert;
+            
+            repertoire = repertoire.filter(chansonRep => {
+                return !concert.some(chansonConc => 
+                    chansonConc.titre === chansonRep.titre && chansonConc.artiste === chansonRep.artiste
+                );
+            });
+
+            mettreAJourAffichage();
+            sauvegarderDonnees();
+            event.target.value = ''; 
+        }
+    } catch (error) {
+        console.error("Erreur de chargement :", error);
+    }
+}
+
+// --- 9. INITIALISATION ---
 document.addEventListener('DOMContentLoaded', () => {
   const btnAjouter = document.getElementById('add-song-button');
   if (btnAjouter) btnAjouter.addEventListener('click', ajouterChanson);
 
   const ulRepertoire = document.getElementById('repertoire-list');
   const ulConcert = document.getElementById('concert-list');
-
   if (ulRepertoire) configurerZoneDepot(ulRepertoire, 'repertoire');
   if (ulConcert) configurerZoneDepot(ulConcert, 'concert');
 
-  // Écouteur pour le bouton de transfert
   const btnVider = document.getElementById('clear-concert-btn');
   if (btnVider) btnVider.addEventListener('click', toutRenvoyerAuRepertoire);
 
-  // Écouteur pour le bouton d'export
   const btnExporter = document.getElementById('export-csv-btn');
   if (btnExporter) btnExporter.addEventListener('click', exporterTableurCSV);
 
+  const btnSaveNamed = document.getElementById('save-named-concert-btn');
+  if (btnSaveNamed) btnSaveNamed.addEventListener('click', sauvegarderConcertNomme);
+
+  const selectLoad = document.getElementById('load-concert-select');
+  if (selectLoad) selectLoad.addEventListener('change', chargerConcertSpecifique);
+
   chargerDonnees();
+  chargerListeConcerts();
 });

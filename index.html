@@ -71,6 +71,19 @@
                     
                     <!-- Dans la section zone-concert de index.html -->
                     <button id="export-csv-btn" class="btn-exporter">📊 Exporter en tableur</button>
+                    <!-- NOUVEAU : SYSTÈME DE SAUVEGARDE NOMMÉE -->
+                    <div class="gestion-sauvegardes">
+                        <h4>💾 Sauvegardes</h4>
+                        
+                        <div class="save-controls">
+                            <input type="text" id="nom-concert-input" placeholder="Nom du concert...">
+                            <button id="save-named-concert-btn" class="btn-sauvegarder">Enregistrer ce concert</button>
+                        </div>
+                        
+                        <select id="load-concert-select">
+                            <option value="">-- Charger un concert sauvegardé --</option>
+                        </select>
+                    </div>
                 </section>
 
             </div>

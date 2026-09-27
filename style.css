@@ -216,3 +216,45 @@ li span {
 .btn-commentaire:hover {
     background-color: #e67e22;
 }
+/* --- GESTION DES SAUVEGARDES --- */
+.gestion-sauvegardes {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #eee;
+}
+
+.gestion-sauvegardes h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    color: #444;
+}
+
+.save-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.save-controls input {
+    flex: 1; /* Le champ de texte prend le maximum de place */
+    margin: 0; /* Enlève la marge par défaut des inputs */
+}
+
+.btn-sauvegarder {
+    background-color: #27ae60; /* Vert pour indiquer une sauvegarde */
+}
+
+.btn-sauvegarder:hover {
+    background-color: #219653;
+}
+
+#load-concert-select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-family: "Nunito", sans-serif;
+    cursor: pointer;
+}
