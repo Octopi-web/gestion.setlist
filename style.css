@@ -148,31 +148,7 @@ li span {
 
 
 /* --- ADAPTATION MOBILES ET TABLETTES (ÉCRANS < 768px) --- */
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
 
-    /* Les deux colonnes passent l'une sous l'autre */
-    .listes-container {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    /* Tous les champs de saisie prennent toute la largeur de l'écran */
-    .ajout-section input,
-    .ajout-section button {
-        width: 100%;
-        margin-right: 0;
-        margin-bottom: 10px;
-    }
-
-    /* Hauteur minimale ajustée sur mobile */
-    .liste-section {
-        min-height: 250px;
-    }
-    
-}
 @media (min-width: 769px) {
     .liste-section {
         min-height: 550px;
