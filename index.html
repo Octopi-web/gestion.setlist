@@ -9,6 +9,17 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+        <!-- À coller dans le <head> de index.html -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0/default.css">
+        <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0/index.min.js"></script>
+        <script>
+            // Active le glisser-déposer tactile sur mobile
+            document.addEventListener("DOMContentLoaded", function() {
+                MobileDragDrop.polyfill({
+                    holdToDrag: 300 // Maintiens le doigt 300ms pour attraper la musique
+                });
+            });
+        </script>
 	</head>
 	<body>
 		<header>
