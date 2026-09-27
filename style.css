@@ -98,6 +98,72 @@ li.dragging {
     text-align: center;
     font-family: 'Nunito', sans-serif, bold;
 }
-background {
-    background-color: #4CAF50;
+/* --- AMÉLIORATIONS GLOBALES --- */
+
+/* Sécurise les dimensions des éléments */
+* {
+    box-sizing: border-box;
+}
+
+/* Fixe le layout d'une chanson pour que le bouton ne s'étire pas */
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+}
+
+li span {
+    flex: 1; /* Le texte occupe tout l'espace disponible */
+    word-break: break-word; /* Évite les débordements de texte long */
+}
+
+/* Bouton de suppression propre et de taille fixe */
+.btn-supprimer {
+    flex-shrink: 0; /* Empêche le bouton de se faire écraser ou étirer */
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-supprimer:hover {
+    background-color: #c0392b;
+}
+
+
+/* --- ADAPTATION MOBILES ET TABLETTES (ÉCRANS < 768px) --- */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    /* Les deux colonnes passent l'une sous l'autre */
+    .listes-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Tous les champs de saisie prennent toute la largeur de l'écran */
+    .ajout-section input,
+    .ajout-section button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    /* Hauteur minimale ajustée sur mobile */
+    .liste-section {
+        min-height: 250px;
+    }
 }
