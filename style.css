@@ -62,12 +62,16 @@ button {
 
 ul.dropzone {
     list-style-type: none;
-    padding: 10px;
     margin: 0;
-    flex-grow: 1; /* La liste prend tout l'espace disponible vers le bas */
+    flex-grow: 2; /* La liste prend tout l'espace disponible vers le bas */
     border: 2px dashed #bcbbbb; /* Indique visuellement qu'on peut déposer */
     border-radius: 6px;
     background-color: #fafafa;
+    min-height: 350px; /* Augmente la hauteur de la boîte pointillée */
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espace régulier entre chaque chanson */
 }
 
 ul.dropzone.drag-over {
@@ -79,7 +83,7 @@ li {
     background-color: #ffffff;
     margin-bottom: 8px;
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid #bcbbbb;
     border-radius: 6px;
     cursor: grab;
     display: flex;
@@ -165,5 +169,15 @@ li span {
     /* Hauteur minimale ajustée sur mobile */
     .liste-section {
         min-height: 250px;
+    }
+    
+}
+@media (min-width: 769px) {
+    .liste-section {
+        min-height: 550px;
+    }
+
+    ul.dropzone {
+        min-height: 450px;
     }
 }
