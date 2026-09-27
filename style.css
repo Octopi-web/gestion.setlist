@@ -181,3 +181,12 @@ li span {
         min-height: 450px;
     }
 }
+.btn-exporter {
+    padding: 9px 15px;
+    background-color: #4c6baf;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px; /* Ajoute un petit espace au-dessus du bouton */
+}
