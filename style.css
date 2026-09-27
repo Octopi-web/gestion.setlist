@@ -121,6 +121,7 @@ li {
 li span {
     flex: 1; /* Le texte occupe tout l'espace disponible */
     word-break: break-word; /* Évite les débordements de texte long */
+    white-space: pre-wrap; /* Indispensable pour afficher les notes à la ligne */
 }
 
 /* Bouton de suppression propre et de taille fixe */
@@ -189,4 +190,36 @@ li span {
     border-radius: 4px;
     cursor: pointer;
     margin-top: 10px; /* Ajoute un petit espace au-dessus du bouton */
+}
+.btn-exporter:hover {
+    background-color: rgb(40, 64, 115);
+}
+.btn-vider:hover {
+    background-color: rgb(40, 64, 115);
+}
+/* Conteneur pour aligner proprement les boutons d'action */
+.actions-container {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+/* Style du bouton commentaire */
+.btn-commentaire {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f39c12; /* Jaune orangé */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-commentaire:hover {
+    background-color: #e67e22;
 }

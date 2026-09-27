@@ -24,7 +24,7 @@ let concert = [];
 let indexDeplace = null;
 let listeOrigine = null;
 
-// --- 3. CONNEXION À LA BASE DE DONNÉES (NOUVEAU) ---
+// --- 3. CONNEXION À LA BASE DE DONNÉES ---
 
 // Sauvegarde l'état complet des deux listes
 async function sauvegarderDonnees() {
@@ -78,20 +78,47 @@ function creerElementChanson(chanson, index, nomListe) {
 
   const spanTexte = document.createElement('span');
 
-  // Construction dynamique de la chaîne de texte
-  let texteChanson = `${chanson.titre} - ${chanson.artiste}`;
+  // 1. On crée un élément 'strong' (gras) pour les infos principales
+  const partieGras = document.createElement('strong');
+  let texteInfos = `${chanson.titre} - ${chanson.artiste}`;
+  if (chanson.chanteur) texteInfos += ` | Chant : ${chanson.chanteur}`;
+  if (chanson.accordage) texteInfos += ` [${chanson.accordage}]`;
+  texteInfos += ` (${formaterDuree(chanson.duree)})`;
   
-  if (chanson.chanteur) {
-    texteChanson += ` | Chant : ${chanson.chanteur}`;
-  }
-  if (chanson.accordage) {
-    texteChanson += ` [${chanson.accordage}]`;
-  }
-  texteChanson += ` (${formaterDuree(chanson.duree)})`;
+  partieGras.textContent = texteInfos;
+  spanTexte.appendChild(partieGras); // On injecte la partie en gras
 
-  spanTexte.textContent = texteChanson;
+  // 2. Ajout du commentaire s'il existe (en texte normal)
+  if (chanson.commentaire) {
+    // createTextNode permet d'ajouter du texte brut à la suite
+    const texteNote = document.createTextNode(`\nNote : ${chanson.commentaire}`);
+    spanTexte.appendChild(texteNote);
+  }
 
-  // Bouton de suppression
+  // Conteneur pour grouper les boutons (Commentaire + Supprimer)
+  const divActions = document.createElement('div');
+  divActions.classList.add('actions-container');
+
+  // --- BOUTON COMMENTAIRE ---
+  const btnCommentaire = document.createElement('button');
+  btnCommentaire.textContent = '📃';
+  btnCommentaire.classList.add('btn-commentaire');
+  btnCommentaire.title = 'Ajouter ou modifier une note';
+
+  btnCommentaire.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const noteActuelle = chanson.commentaire || '';
+    const nouvelleNote = prompt(`Note pour "${chanson.titre}" :`, noteActuelle);
+
+    if (nouvelleNote !== null) {
+      const tableauCible = nomListe === 'repertoire' ? repertoire : concert;
+      tableauCible[index].commentaire = nouvelleNote.trim();
+      mettreAJourAffichage();
+      sauvegarderDonnees();
+    }
+  });
+
+  // --- BOUTON SUPPRIMER ---
   const btnSuppr = document.createElement('button');
   btnSuppr.textContent = '✕';
   btnSuppr.classList.add('btn-supprimer');
@@ -99,21 +126,22 @@ function creerElementChanson(chanson, index, nomListe) {
 
   btnSuppr.addEventListener('click', (e) => {
     e.stopPropagation();
-
     if (nomListe === 'repertoire') {
       repertoire.splice(index, 1);
     } else if (nomListe === 'concert') {
       concert.splice(index, 1);
     }
-
     mettreAJourAffichage();
     sauvegarderDonnees();
   });
 
+  // Assemblage
+  divActions.appendChild(btnCommentaire);
+  divActions.appendChild(btnSuppr);
   li.appendChild(spanTexte);
-  li.appendChild(btnSuppr);
+  li.appendChild(divActions);
 
-  // Événements de Drag & Drop
+  // Drag & Drop
   li.addEventListener('dragstart', (e) => {
     indexDeplace = index;
     listeOrigine = nomListe;
@@ -129,6 +157,7 @@ function creerElementChanson(chanson, index, nomListe) {
 
   return li;
 }
+
 // Calcule l'index exact où insérer la musique en fonction de la position Y de la souris
 function obtenirIndexInsertion(ulElement, positionY) {
   // On récupère toutes les chansons de la liste, SAUF celle qu'on est en train de glisser
@@ -169,7 +198,7 @@ function configurerZoneDepot(ulElement, nomListeCible) {
     const tableauSource = listeOrigine === 'repertoire' ? repertoire : concert;
     const tableauCible = nomListeCible === 'repertoire' ? repertoire : concert;
 
-    // --- NOUVEAU : On calcule la position visée ---
+    // On calcule la position visée
     const indexInsertion = obtenirIndexInsertion(ulElement, e.clientY);
 
     // 1. On retire l'élément de sa liste de départ
@@ -254,6 +283,7 @@ function ajouterChanson() {
   mettreAJourAffichage();
   sauvegarderDonnees();
 }
+
 function toutRenvoyerAuRepertoire() {
   // Si le concert est déjà vide, inutile d'exécuter la suite
   if (concert.length === 0) return;
@@ -268,44 +298,38 @@ function toutRenvoyerAuRepertoire() {
   mettreAJourAffichage();
   sauvegarderDonnees();
 }
+
 function exporterTableurCSV() {
   if (concert.length === 0) {
     alert("La liste du concert est vide ! Rien à exporter.");
     return;
   }
 
-  // 1. Création des en-têtes du tableau (colonnes)
-  let contenuCSV = "Numéro;Titre;Artiste;Chant;Accordage;Durée\n";
+  // En-têtes avec la colonne Commentaire
+  let contenuCSV = "Numéro;Titre;Artiste;Chant;Accordage;Durée;Commentaire\n";
 
-  // 2. Ajout de chaque musique ligne par ligne
   concert.forEach((chanson, index) => {
-    // On sécurise les textes au cas où ils contiennent des guillemets
     const titre = chanson.titre ? chanson.titre.replace(/"/g, '""') : '';
     const artiste = chanson.artiste ? chanson.artiste.replace(/"/g, '""') : '';
     const chanteur = chanson.chanteur ? chanson.chanteur.replace(/"/g, '""') : '';
     const accordage = chanson.accordage ? chanson.accordage.replace(/"/g, '""') : '';
     const duree = formaterDuree(chanson.duree);
+    const commentaire = chanson.commentaire ? chanson.commentaire.replace(/"/g, '""') : '';
 
-    // On place chaque info entre guillemets et séparée par un point-virgule
-    contenuCSV += `"${index + 1}";"${titre}";"${artiste}";"${chanteur}";"${accordage}";"${duree}"\n`;
+    contenuCSV += `"${index + 1}";"${titre}";"${artiste}";"${chanteur}";"${accordage}";"${duree}";"${commentaire}"\n`;
   });
 
-  // 3. Forcer l'encodage UTF-8 pour que les accents s'affichent bien dans Excel (BOM)
   const bom = "\uFEFF"; 
   const blob = new Blob([bom + contenuCSV], { type: 'text/csv;charset=utf-8;' });
   
-  // 4. Création d'un lien invisible pour forcer le téléchargement du fichier
   const url = URL.createObjectURL(blob);
   const lien = document.createElement('a');
   lien.href = url;
-  
-  // Nom du fichier téléchargé
   lien.setAttribute('download', 'Setlist_Concert.csv');
   
   document.body.appendChild(lien);
-  lien.click(); // Simule le clic
+  lien.click(); 
   
-  // Nettoyage après le téléchargement
   document.body.removeChild(lien);
   URL.revokeObjectURL(url);
 }
@@ -321,14 +345,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (ulRepertoire) configurerZoneDepot(ulRepertoire, 'repertoire');
   if (ulConcert) configurerZoneDepot(ulConcert, 'concert');
 
-  // --- NOUVEAU : Écouteur pour le bouton de transfert ---
+  // Écouteur pour le bouton de transfert
   const btnVider = document.getElementById('clear-concert-btn');
   if (btnVider) btnVider.addEventListener('click', toutRenvoyerAuRepertoire);
 
-  // Dans DOMContentLoaded dans app.js
+  // Écouteur pour le bouton d'export
   const btnExporter = document.getElementById('export-csv-btn');
   if (btnExporter) btnExporter.addEventListener('click', exporterTableurCSV);
-
 
   chargerDonnees();
 });
