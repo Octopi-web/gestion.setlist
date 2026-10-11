@@ -369,7 +369,86 @@ async function chargerConcertSpecifique(event) {
         console.error("Erreur de chargement :", error);
     }
 }
+// --- FONCTION D'IMPORTATION GLOBALE DEPUIS LA CONSOLE ---
+// --- FONCTION D'IMPORTATION GLOBALE CORRIGÉE ---
+window.importerToutesLesChansons = async function() {
+  const toutesLesChansonsExcel = [
+    { titre: "A ma place", artiste: "Axel Bauer & Zazie", chanteur: "Clara & David", accordage: "Normal", duree: 251 },
+    { titre: "Amsterdam", artiste: "Jacques Brel", chanteur: "David & Clara au piano", accordage: "Normal", duree: 180 },
+    { titre: "Always remember this way", artiste: "Lady Gaga", chanteur: "Clara", accordage: "Normal", duree: 200 },
+    { titre: "Aux sombres héros de l'amer", artiste: "Noir Désir", chanteur: "David & Clara au piano", accordage: "Normal", duree: 198 },
+    { titre: "Back to black", artiste: "Amy Winehouse", chanteur: "Clara & Alex", accordage: "/", duree: 250 },
+    { titre: "Beds are Burning", artiste: "Midnight Oil", chanteur: "David & Clara", accordage: "Normal", duree: 246 },
+    { titre: "Birds of a feather", artiste: "Billie Eilish", chanteur: "Clara & Alex", accordage: "/", duree: 220 },
+    { titre: "Born to be wild", artiste: "Steppenwolf", chanteur: "David & Clara au piano", accordage: "Normal", duree: 271 },
+    { titre: "Caroline", artiste: "MC Solaar", chanteur: "Clara", accordage: "Normal", duree: 340 },
+    { titre: "Chicago", artiste: "Graham Nash", chanteur: "Clara & Alex", accordage: "/", duree: 225 },
+    { titre: "Cocaïne", artiste: "J.J. Cale", chanteur: "David", accordage: "Normal", duree: 182 },
+    { titre: "Come together", artiste: "The Beatles", chanteur: "David", accordage: "Normal", duree: 212 },
+    { titre: "Comme d'habitude", artiste: "Claude François", chanteur: "Clara & David", accordage: "/", duree: 299 },
+    { titre: "Creep", artiste: "Radiohead", chanteur: "Clara", accordage: "Normal", duree: 260 },
+    { titre: "Decode", artiste: "Paramore", chanteur: "Clara", accordage: "Normal", duree: 261 },
+    { titre: "Devil", artiste: "Shinedown", chanteur: "Clara", accordage: "Normal", duree: 230 },
+    { titre: "Dirty old town", artiste: "Ewan MacColl", chanteur: "David & Clara au piano", accordage: "Normal", duree: 190 },
+    { titre: "Encore & encore", artiste: "Francis Cabrel", chanteur: "David & Clara au piano", accordage: "Normal", duree: 323 },
+    { titre: "Eteins la lumière", artiste: "Johnny Hallyday", chanteur: "David & Clara au piano", accordage: "Normal", duree: 300 },
+    { titre: "Et bam", artiste: "Mentissa", chanteur: "Clara & Alex", accordage: "/", duree: 195 },
+    { titre: "Everything i do", artiste: "Bryan Adams", chanteur: "Clara & Nico", accordage: "Normal", duree: 229 },
+    { titre: "Forever", artiste: "Kiss", chanteur: "Clara", accordage: "Normal", duree: 229 },
+    { titre: "Fortunate son/fils de personne", artiste: "Creedence Clearwater Revival", chanteur: "David", accordage: "Normal", duree: 203 },
+    { titre: "Girls wanna have fun", artiste: "Cyndi Lauper", chanteur: "Clara & Nico", accordage: "Capo 7", duree: 207 },
+    { titre: "Hey Joe", artiste: "Jimi Hendrix", chanteur: "David", accordage: "Normal", duree: 378 },
+    { titre: "Hotel California", artiste: "Eagles", chanteur: "Clara", accordage: "Normal", duree: 253 },
+    { titre: "I wish you were here", artiste: "Pink Floyd", chanteur: "David & Clara", accordage: "Normal", duree: 290 },
+    { titre: "If i were a boy", artiste: "Beyoncé", chanteur: "Clara & Alex", accordage: "/", duree: 250 },
+    { titre: "jai oublié de vivre", artiste: "Johnny Hallyday", chanteur: "David & Clara", accordage: "Normal (Capo1)", duree: 265 },
+    { titre: "Je l'aime à mourir", artiste: "Francis Cabrel", chanteur: "Clara", accordage: "/", duree: 168 },
+    { titre: "Johnny B Goode", artiste: "Chuck Berry", chanteur: "David & Clara au piano", accordage: "Normal", duree: 185 },
+    { titre: "Jolene", artiste: "Dolly Parton", chanteur: "Clara", accordage: "Normal (BD Nico)", duree: 180 },
+    { titre: "Jumping jack flash", artiste: "The Rolling Stones", chanteur: "David", accordage: "Normal", duree: 242 },
+    { titre: "Knocking on heaven's door", artiste: "Bob Dylan", chanteur: "David & Clara au piano", accordage: "Normal", duree: 423 },
+    { titre: "La corrida", artiste: "Francis Cabrel", chanteur: "David & Clara", accordage: "Normal", duree: 305 },
+    { titre: "L'amour à la machine", artiste: "Souchon", chanteur: "David & Clara au piano", accordage: "Normal", duree: 224 },
+    { titre: "Lazy", artiste: "Deep Purple", chanteur: "David", accordage: "Normal", duree: 334 },
+    { titre: "Le penitencier", artiste: "Johnny Hallyday", chanteur: "David & Clara", accordage: "Normal", duree: 390 },
+    { titre: "Like a prayer", artiste: "Madonna", chanteur: "Clara & Alex", accordage: "/", duree: 213 },
+    { titre: "Little wing", artiste: "Jimi Hendrix", chanteur: "David", accordage: "Normal", duree: 194 },
+    { titre: "Lose control", artiste: "Teddy Swims", chanteur: "Clara & Alex", accordage: "/", duree: 195 },
+    { titre: "Love on the brain", artiste: "Rihanna", chanteur: "Clara & Nico", accordage: "Normal", duree: 230 },
+    { titre: "Mad World", artiste: "Tears for Fears", chanteur: "Clara", accordage: "Normal", duree: 201 },
+    { titre: "Paint it Black", artiste: "The Rolling Stones", chanteur: "Clara", accordage: "Normal", duree: 180 },
+    { titre: "Photograph", artiste: "Ed Sheeran", chanteur: "Clara & Alex", accordage: "/", duree: 250 },
+    { titre: "Popcorn salé", artiste: "Santa", chanteur: "Clara & Nico", accordage: "Normal", duree: 226 },
+    { titre: "Purple rain", artiste: "Prince", chanteur: "Clara", accordage: "Normal", duree: 380 },
+    { titre: "Quand t’es dans le désert", artiste: "Jean-Patrick Capdevielle", chanteur: "David & Clara au piano", accordage: "Normal", duree: 229 },
+    { titre: "Red house", artiste: "Jimi Hendrix", chanteur: "David", accordage: "Normal", duree: 361 },
+    { titre: "Rolling in the deep", artiste: "Adele", chanteur: "Clara & Alex", accordage: "/", duree: 230 },
+    { titre: "Salut les amoureux", artiste: "Joe Dassin", chanteur: "David & Clara", accordage: "Normal (Capo 2)", duree: 242 },
+    { titre: "Say something nasty", artiste: "An Pierlé", chanteur: "David", accordage: "Normal", duree: 255 },
+    { titre: "Simply the best", artiste: "Tina Turner", chanteur: "Clara & Alex", accordage: "/", duree: 228 },
+    { titre: "Shallow", artiste: "Lady Gaga", chanteur: "Clara & Nico", accordage: "Normal", duree: 222 },
+    { titre: "Sound of silence", artiste: "Simon & Garfunkel", chanteur: "Clara & David", accordage: "/", duree: 174 },
+    { titre: "Sweet child o mine", artiste: "Guns N' Roses", chanteur: "David & Clara au piano", accordage: "Normal", duree: 222 },
+    { titre: "That's all right mama", artiste: "Elvis Presley", chanteur: "David", accordage: "Normal", duree: 162 },
+    { titre: "Toi & Moi", artiste: "Guillaume Grand", chanteur: "Clara & Nico", accordage: "Capo 2", duree: 218 },
+    { titre: "Try", artiste: "Pink", chanteur: "Clara", accordage: "Normal", duree: 250 },
+    { titre: "Thinking out loud", artiste: "Ed Sheeran", chanteur: "Clara & Nico", accordage: "Normal", duree: 302 },
+    { titre: "Thrill is gone", artiste: "B.B. King", chanteur: "David & Clara au piano", accordage: "Normal", duree: 297 },
+    { titre: "Tush", artiste: "ZZ Top", chanteur: "David", accordage: "Normal", duree: 135 },
+    { titre: "Un autre monde", artiste: "Téléphone", chanteur: "Clara & Alex", accordage: "/", duree: 230 },
+    { titre: "Vivre", artiste: "Zazie", chanteur: "Clara", accordage: "Normal", duree: 239 },
+    { titre: "Wasting my young years", artiste: "London Grammar", chanteur: "Clara & Nico", accordage: "Normal", duree: 199 },
+    { titre: "What's up", artiste: "4 Non Blondes", chanteur: "Clara", accordage: "Normal", duree: 295 },
+    { titre: "With or without you", artiste: "U2", chanteur: "David & Clara", accordage: "Normal", duree: 290 }
+  ];
 
+  repertoire = toutesLesChansonsExcel;
+  await sauvegarderDonnees();
+  mettreAJourAffichage();
+  
+  console.log("✅ Importation réussie !");
+  alert("Les 67 chansons ont été importées avec les artistes originaux et les bons chanteurs !");
+};
 // --- 9. INITIALISATION ---
 document.addEventListener('DOMContentLoaded', () => {
   const btnAjouter = document.getElementById('add-song-button');
